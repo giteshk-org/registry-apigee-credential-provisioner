@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CredentialProvisioner</title>
+  <base href="/">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <link href="favicon.ico" rel="icon" type="image/x-icon">
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="mat-typography">
+<script async defer src="https://accounts.google.com/gsi/client"></script>
+<div data-auto_prompt="false"
+     data-callback="handleGoogleToken"
+     data-client_id="755844538444-nsa3kma108b5a3uvf0t8182nqfiuno4f.apps.googleusercontent.com"
+     id="g_id_onload">
+</div>
+<div class="g_id_signin"
+     data-logo_alignment="left"
+     data-shape="rectangular"
+     data-size="large"
+     data-text="sign_in_with"
+     data-theme="outline"
+     data-type="standard">
+</div>
+
+<script>
+  function handleGoogleToken(response) {
+    window.oneTapLogInCredentials = response.credential;
+    localStorage.setItem("oneTapLogInCredentials", response.credential);
+  }
+</script>
+<app-root></app-root>
+</body>
+</html>

@@ -1,0 +1,298 @@
+// (-- api-linter: standard-methods=disabled --)
+// (-- api-linter: non-project-resources=disabled --)
+// (-- api-linter: active-developer-methods=disabled --)
+syntax = "proto3";
+
+package google.cloud.apigee.v1;
+
+import "google/api/annotations.proto";
+import "google/api/auditing.proto";
+import "google/api/authz.proto";
+import "google/api/field_behavior.proto";
+import "google/api/policy.proto";
+import "google/cloud/apigee/v1/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+
+option use_java_stubby_library = true;
+
+service DeveloperAppKeys {
+  // Creates a custom consumer key and secret for a developer app. This is
+  // particularly useful if you want to migrate existing consumer keys and
+  // secrets to Apigee from another system.
+  //
+  // Consumer keys and secrets can contain letters, numbers, underscores, and
+  // hyphens. No other special characters are allowed. To avoid service
+  // disruptions, a consumer key and secret should not exceed 2 KBs each.
+  //
+  // **Note**: When creating the consumer key and secret, an association to
+  // API products will not be made. Therefore, you should not specify the
+  // associated API products in your request. Instead, use the
+  // [UpdateDeveloperAppKey][DeveloperAppKeys.UpdateDeveloperAppKey] API to
+  // make the association after the consumer key and secret are created.
+  //
+  // If a consumer key and secret already exist, you can keep them or
+  // delete them using the
+  // [DeleteDeveloperAppKey][DeveloperAppKeys.DeleteDeveloperAppKey] API.
+  rpc CreateDeveloperAppKey(CreateDeveloperAppKeyRequest)
+    returns (DeveloperAppKey) {
+    option (google.api.http) = {
+      post: "/v1/{parent=organizations/*/developers/*/apps/*}/keys"
+      body: "developer_app_key"
+      additional_bindings {
+        post: "/v1/{parent=organizations/*/developers/*/apps/*}/keys/create"
+        body: "developer_app_key"
+      }
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+
+  // Adds an API product to a developer app key, enabling the app that holds
+  // the key to access the API resources bundled in the API product.
+  //
+  // In addition, you can add
+  // attributes to a developer app key. This API replaces the
+  // existing attributes with those specified in the request.
+  // Include or exclude any existing attributes that you want to retain or
+  // delete, respectively.
+  //
+  // You can use the same key to access all API products
+  // associated with the app.
+  rpc UpdateDeveloperAppKey(UpdateDeveloperAppKeyRequest)
+    returns (DeveloperAppKey) {
+    option (google.api.http) = {
+      post: "/v1/{name=organizations/*/developers/*/apps/*/keys/*}"
+      body: "developer_app_key"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+
+  // Updates the scope of an app.
+  //
+  // This API replaces the
+  // existing scopes with those specified in the request.
+  // Include or exclude any existing scopes that you want to retain or
+  // delete, respectively. The specified scopes must already
+  // be defined for the API products associated with the app.
+  //
+  // This API sets the `scopes` element
+  // under the `apiProducts` element in the attributes of the app.
+  rpc ReplaceDeveloperAppKey(ReplaceDeveloperAppKeyRequest)
+    returns (DeveloperAppKey) {
+    option (google.api.http) = {
+      put: "/v1/{name=organizations/*/developers/*/apps/*/keys/*}"
+      body: "developer_app_key"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+
+  // Deletes an app's consumer key and removes all API products
+  // associated with the app. After the consumer key is deleted,
+  // it cannot be used to access any APIs.
+  //
+  // **Note**: After you delete a consumer key, you may want to:
+  // 1. Create a new consumer key and secret for the developer app using the
+  // [CreateDeveloperAppKey][DeveloperAppKeys.CreateDeveloperAppKey] API, and
+  // subsequently add an API product to the key using the
+  // [UpdateDeveloperAppKey][DeveloperAppKeys.UpdateDeveloperAppKey] API.
+  // 2. Delete the developer app, if it is no longer required.
+  rpc DeleteDeveloperAppKey(DeleteDeveloperAppKeyRequest)
+    returns (DeveloperAppKey) {
+    option (google.api.http) = {
+      delete: "/v1/{name=organizations/*/developers/*/apps/*/keys/*}"
+    };
+    option (google.api.method_auditing).directive = "AUDIT_REQUEST_ONLY";
+  }
+
+  // Removes an API product from an app's consumer key. After the API product is
+  // removed, the app cannot access the API resources defined in
+  // that API product.
+  //
+  // **Note**: The consumer key is not removed, only its association with the
+  // API product.
+  rpc DeleteApiProduct(DeleteApiProductByKeyRequest) returns (DeveloperAppKey) {
+    option (google.api.http) = {
+      delete: "/v1/{name=organizations/*/developers/*/apps/*/keys/*/apiproducts/*}"
+    };
+    option (google.api.method_auditing).directive = "AUDIT_REQUEST_ONLY";
+  }
+
+  // Gets details for a consumer key for a developer app, including the key
+  // and secret value, associated API products, and other information.
+  rpc GetDeveloperAppKey(GetDeveloperAppKeyRequest) returns (DeveloperAppKey) {
+    option (google.api.http) = {
+      get: "/v1/{name=organizations/*/developers/*/apps/*/keys/*}"
+    };
+    option (google.api.method_auditing).directive = "AUDIT_REQUEST_ONLY";
+  }
+
+  // Approves or revokes the consumer key for an API product. After a consumer
+  // key is approved, the app can use it to access APIs.
+  //
+  // A consumer key that is revoked or pending cannot be used to access an API.
+  // Any access tokens associated with a revoked consumer key will remain
+  // active. However, Apigee checks the status of the consumer key and
+  // if set to `revoked` will not allow access to the API.
+  rpc UpdateDeveloperAppKeyApiProduct(UpdateDeveloperAppKeyApiProductRequest)
+    returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/{name=organizations/*/developers/*/apps/*/keys/*/apiproducts/*}"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+}
+
+// Request for
+// [CreateDeveloperAppKey][DeveloperAppKeys.CreateDeveloperAppKey]
+message CreateDeveloperAppKeyRequest {
+  // Parent of the developer app key. Use the following structure in your
+  // request:
+  //   `organizations/{org}/developers/{developer_email}/apps`
+  string parent = 1 [
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.appkeys.create"
+  ];
+  // Consumer key and secret details.
+  DeveloperAppKey developer_app_key = 2
+  [(google.api.field_auditing).directive = "AUDIT"];
+}
+
+// Request for
+// [UpdateDeveloperAppKey][DeveloperAppKeys.UpdateDeveloperAppKey]
+message UpdateDeveloperAppKeyRequest {
+  // Name of the developer app key. Use the following structure in your request:
+  //   `organizations/{org}/developers/{developer_email}/apps/{app}/keys/{key}`
+  string name = 1 [
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.appkeys.manage"
+  ];
+
+  // Approve or revoke the consumer key by setting this value to
+  // `approve` or `revoke`, respectively. The `Content-Type` header must be set
+  // to `application/octet-stream`.
+  string action = 2 [(google.api.field_auditing).directive = "AUDIT"];
+  DeveloperAppKey developer_app_key = 3
+  [(google.api.field_auditing).directive = "AUDIT"];
+}
+
+// Request for
+// [ReplaceDeveloperAppKey][DeveloperAppKeys.ReplaceDeveloperAppKey]
+message ReplaceDeveloperAppKeyRequest {
+  // Name of the developer app key. Use the following structure in your request:
+  //   `organizations/{org}/developers/{developer_email}/apps/{app}/keys/{key}`
+  string name = 1 [
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.appkeys.manage"
+  ];
+
+  DeveloperAppKey developer_app_key = 2
+  [(google.api.field_auditing).directive = "AUDIT"];
+}
+
+// Request for
+// [DeleteDeveloperAppKey][DeveloperAppKeys.DeleteDeveloperAppKey]
+message DeleteDeveloperAppKeyRequest {
+  // Name of the developer app key. Use the following structure in your request:
+  //   `organizations/{org}/developers/{developer_email}/apps/{app}/keys/{key}`
+  string name = 1 [
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.appkeys.delete"
+  ];
+}
+
+// Request for
+// [DeleteApiProduct][DeveloperAppKeys.DeleteApiProduct].
+message DeleteApiProductByKeyRequest {
+  // Name of the API product in the developer app key in the following
+  // format:
+  //   `organizations/{org}/developers/{developer_email}/apps/{app}/keys/{key}/apiproducts/{apiproduct}`
+  string name = 1 [
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.appkeys.delete"
+  ];
+}
+
+// Request for
+// [UpdateDeveloperAppKeyApiProduct][DeveloperAppKeys.UpdateDeveloperAppKeyApiProduct].
+message UpdateDeveloperAppKeyApiProductRequest {
+  // Name of the API product in the developer app key in the following
+  // format:
+  //   `organizations/{org}/developers/{developer_email}/apps/{app}/keys/{key}/apiproducts/{apiproduct}`
+  string name = 1 [
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.appkeys.manage"
+  ];
+  // Approve or revoke the consumer key by setting this value to
+  // `approve` or `revoke`, respectively.
+  // (-- action query param has to be passed with content-type:
+  // application/octet-stream --)
+  string action = 2 [(google.api.field_auditing).directive = "AUDIT"];
+}
+
+// Request for
+// [GetKeyForDeveloperApp][DeveloperAppKeys.GetKeyForDeveloperApp].
+message GetDeveloperAppKeyRequest {
+  // Name of the developer app key. Use the following structure in your request:
+  //   `organizations/{org}/developers/{developer_email}/apps/{app}/keys/{key}`
+  string name = 1 [
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.appkeys.get"
+  ];
+}
+
+message DeveloperAppKey {
+  // List of API products for which the credential can be used.
+  //
+  // **Note**: Do not specify the list of API products when creating a consumer
+  // key and secret for a developer app. Instead, use the
+  // [UpdateDeveloperAppKey][DeveloperAppKeys.UpdateDeveloperAppKey] API to
+  // make the association after the consumer key and secret are created.
+  google.protobuf.ListValue api_products = 1
+  [(google.api.field_auditing).directive = "AUDIT"];
+  // List of attributes associated with the credential.
+  repeated Attribute attributes = 2
+  [(google.api.field_auditing).directive = "AUDIT"];
+  // Consumer key.
+  string consumer_key = 3 [(google.api.field_auditing).directive = "AUDIT"];
+  // Secret key.
+  string consumer_secret = 4;
+  // Time the developer app expires in milliseconds since epoch.
+  // (-- api-linter: standard-fields=disabled --)
+  int64 expire_time_millis = 5 [json_name = "expiresAt"];
+  // Time the developer app was created in milliseconds since epoch.
+  int64 issue_time_millis = 6 [json_name = "issuedAt"];
+  // Scopes to apply to the app. The specified scope names must already
+  // be defined for the API product that you associate with the app.
+  repeated string scopes = 7 [(google.api.field_auditing).directive = "AUDIT"];
+  // Status of the credential. Valid values include `approved` or `revoked`.
+  string status = 8 [(google.api.field_auditing).directive = "AUDIT"];
+  // Expiration time, in seconds, for the consumer key. If not set or left
+  // to the default value of `-1`, the API key never expires. The expiration
+  // time can't be updated after it is set.
+  //
+  // (-- api-linter: core::0140::prepositions=disabled
+  //     aip.dev/not-precedent: We need to do this to differ from the
+  //     `expire_time_millis` field. --)
+  // (-- api-linter: core::0142::time-field-type=disabled
+  //     aip.dev/not-precedent: We need to do this to be consistent with rest of
+  //     the Apigee APIs --)
+  int64 expires_in_seconds = 9 [(google.api.field_behavior) = INPUT_ONLY];
+}

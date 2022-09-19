@@ -1,0 +1,17 @@
+<p>apigeeregistry-api-deployment works!</p>
+<div *ngIf="gatewayInfo.found; else elseBlock">
+  To access the {{deployment}} of {{api}}, you will need access
+  to  {{gatewayInfo.apigeeApiProduct }} API
+  Product from <i> {{gatewayInfo.apigeeOrg }}  </i> Apigee organization
+  <developer-apps-list [apigeeApiProduct]="gatewayInfo.apigeeApiProduct"
+                       [apigeeOrg]="gatewayInfo.apigeeOrg"></developer-apps-list>
+</div>
+<ng-template #elseBlock>
+
+  <mat-progress-spinner
+    class="example-margin"
+    mode="indeterminate"
+  >
+  </mat-progress-spinner>
+
+</ng-template>

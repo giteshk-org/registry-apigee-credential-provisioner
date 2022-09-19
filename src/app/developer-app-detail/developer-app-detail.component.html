@@ -1,0 +1,98 @@
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>{{app.name}}</mat-panel-title>
+  </mat-expansion-panel-header>
+  <mat-card>
+    <mat-card-title>App Details</mat-card-title>
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <mat-grid-list cols="2" rowHeight="4:1">
+        <mat-grid-tile>
+          <table>
+            <tr>
+              <td class="mat-form-field-label">Name</td>
+              <td>{{app.name}}</td>
+            </tr>
+            <tr>
+              <td class="mat-form-field-label">Display Name</td>
+              <td>{{app.displayName}}</td>
+            </tr>
+            <tr>
+              <td class="mat-form-field-label">Registered</td>
+              <td>{{app.createdAt | date}}</td>
+            </tr>
+          </table>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <table>
+            <tr>
+              <td class="mat-form-field-label">App Status</td>
+              <td>{{app.status}}</td>
+            </tr>
+            <tr>
+              <td class="mat-form-field-label">Callback URL</td>
+              <td>{{app.callbackUrl}}</td>
+            </tr>
+            <tr>
+              <td class="mat-form-field-label">Notes</td>
+              <td>{{app.notes}}</td>
+            </tr>
+          </table>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-title>Credentials</mat-card-title>
+    <mat-card-content>
+      <div *ngFor="let credential of app.credentials;">
+        <mat-divider></mat-divider>
+        <mat-grid-list cols="2" rowHeight="4:1">
+          <mat-grid-tile>
+            <table>
+              <tr>
+                <td class="mat-form-field-label">Status</td>
+                <td>{{credential.status}}</td>
+              </tr>
+              <tr>
+                <td class="mat-form-field-label">Key</td>
+                <td>{{credential.consumerKey}}</td>
+              </tr>
+              <tr>
+                <td class="mat-form-field-label">Secret</td>
+                <td>{{credential.consumerSecret}}</td>
+              </tr>
+              <tr>
+                <td class="mat-form-field-label">IssuedAt</td>
+                <td>{{credential.issuedAt | date}}</td>
+              </tr>
+              <tr>
+                <td class="mat-form-field-label">Expiry</td>
+                <td>
+                  <div *ngIf="credential.expiresAt =='-1' else expiresAtBlock">
+                    Never
+                  </div>
+                  <ng-template #expiresAtBlock>{{credential.expiresAt | date}}</ng-template>
+                </td>
+              </tr>
+            </table>
+          </mat-grid-tile>
+          <mat-grid-tile>
+              <table>
+                <tr>
+                  <th>API Product</th>
+                  <th>Status</th>
+                </tr>
+                <tr *ngFor="let element of credential.apiProducts">
+                  <td> {{element.apiproduct}}</td>
+                  <td>{{element.status}}</td>
+                </tr>
+              </table>
+          </mat-grid-tile>
+        </mat-grid-list>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</mat-expansion-panel>

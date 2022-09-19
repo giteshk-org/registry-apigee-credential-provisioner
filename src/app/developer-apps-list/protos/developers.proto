@@ -1,0 +1,745 @@
+// (-- api-linter: standard-methods=disabled --)
+// (-- api-linter: non-project-resources=disabled --)
+// (-- api-linter: active-developer-methods=disabled --)
+syntax = "proto3";
+
+package google.cloud.apigee.v1;
+
+import "google/api/annotations.proto";
+import "google/api/auditing.proto";
+import "google/api/authz.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/policy.proto";
+import "google/api/resource.proto";
+import "google/api/visibility.proto";
+import "google/cloud/apigee/v1/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/type/money.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "DevelopersProto";
+option java_package = "com.google.cloud.apigee.v1";
+option use_java_stubby_library = true;
+
+service Developers {
+  // Creates a developer. Once created,
+  // the developer can register an app and obtain an API key.
+  //
+  // At creation time, a developer is set as `active`. To change the developer
+  // status, use the [SetDeveloperStatus][Developers.SetDeveloperStatus] API.
+  rpc CreateDeveloper(CreateDeveloperRequest) returns (Developer) {
+    option (google.api.http) = {
+      post: "/v1/{parent=organizations/*}/developers"
+      body: "developer"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+  // Updates a developer.
+  //
+  // This API replaces the existing developer details with those specified
+  // in the request. Include or exclude any existing details that
+  // you want to retain or delete, respectively.
+  //
+  // The custom attribute limit is 18.
+  //
+  // **Note**: OAuth access tokens and Key Management Service (KMS) entities
+  // (apps, developers, and API products) are cached for 180 seconds
+  // (current default). Any custom attributes associated with these entities
+  // are cached for at least 180 seconds after the entity is accessed at
+  // runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy
+  // won't be able to expire an access token in less than 180 seconds.
+  rpc UpdateDeveloper(UpdateDeveloperRequest) returns (Developer) {
+    option (google.api.http) = {
+      put: "/v1/{name=organizations/*/developers/*}"
+      body: "developer"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+  // Returns the developer details, including the
+  // developer's name, email address, apps, and other information.
+  //
+  // **Note**: The response includes only the first 100 developer apps.
+  rpc GetDeveloper(GetDeveloperRequest) returns (Developer) {
+    option (google.api.http) = {
+      get: "/v1/{name=organizations/*/developers/*}"
+    };
+    option (google.api.method_auditing).directive = "AUDIT_REQUEST_ONLY";
+  }
+  // Deletes a developer. All apps and API keys associated
+  // with the developer are also removed.
+  //
+  // **Warning**: This API will permanently delete the developer
+  // and related artifacts.
+  //
+  // To avoid permanently deleting developers and their artifacts,
+  // set the developer status to `inactive` using
+  // the [SetDeveloperStatus][Developers.SetDeveloperStatus] API.
+  //
+  // **Note**: The delete operation is asynchronous. The developer app is
+  // deleted immediately,
+  // but its associated resources, such as apps and API keys, may take anywhere
+  // from a few seconds to a few minutes to be deleted.
+  rpc DeleteDeveloper(DeleteDeveloperRequest) returns (Developer) {
+    option (google.api.http) = {
+      delete: "/v1/{name=organizations/*/developers/*}"
+    };
+    option (google.api.method_auditing).directive = "AUDIT_REQUEST_ONLY";
+  }
+  // Lists all developers in an organization by email address.
+  //
+  // By default,
+  // the response does not include company developers. Set the `includeCompany`
+  // query parameter to `true` to include company developers.
+  //
+  // **Note**: A maximum of 1000 developers are returned in the response. You
+  // paginate the list of developers returned using the `startKey` and `count`
+  // query parameters.
+  rpc ListDevelopers(ListDevelopersRequest) returns (ListOfDevelopersResponse) {
+    option (google.api.http) = {
+      get: "/v1/{parent=organizations/*}/developers"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+  // Sets the status of a developer.
+  //
+  // A developer is `active` by default. If you set a developer's status to
+  // `inactive`, the API keys assigned to the developer apps are no longer valid
+  // even though the API keys are set to `approved`. Inactive developers
+  // can still sign in to the developer portal and create apps; however, any
+  // new API keys generated during app creation won't work.
+  //
+  // To set the status of a developer, set the `action` query parameter to
+  // `active` or `inactive`, and the `Content-Type` header to
+  // `application/octet-stream`. If successful, the API call returns the
+  // following HTTP status code: `204 No Content`
+  rpc SetDeveloperStatus(SetDeveloperStatusRequest)
+    returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/{name=organizations/*/developers/*}"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+  // Returns the value of the specified developer attribute.
+  rpc GetDeveloperAttribute(GetDeveloperAttributeRequest) returns (Attribute) {
+    option (google.api.http) = {
+      get: "/v1/{name=organizations/*/developers/*/attributes/*}"
+    };
+    option (google.api.method_auditing).directive = "AUDIT_REQUEST_ONLY";
+  }
+  // Deletes a developer attribute.
+  rpc DeleteDeveloperAttribute(DeleteDeveloperAttributeRequest)
+    returns (Attribute) {
+    option (google.api.http) = {
+      delete: "/v1/{name=organizations/*/developers/*/attributes/*}"
+    };
+    option (google.api.method_auditing).directive = "AUDIT_REQUEST_ONLY";
+  }
+  // Updates a developer attribute.
+  //
+  // **Note**: OAuth access tokens and Key Management Service (KMS) entities
+  // (apps, developers, and API products) are cached for 180 seconds
+  // (default). Any custom attributes associated with these entities
+  // are cached for at least 180 seconds after the entity is accessed at
+  // runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy
+  // won't be able to expire an access token in less than 180 seconds.
+  rpc UpdateDeveloperAttribute(UpdateDeveloperAttributeRequest)
+    returns (Attribute) {
+    option (google.api.http) = {
+      post: "/v1/{name=organizations/*/developers/*/attributes/*}"
+      body: "attribute"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+
+  // Returns a list of all developer attributes.
+  rpc ListDeveloperAttributes(ListDeveloperAttributesRequest)
+    returns (Attributes) {
+    option (google.api.http) = {
+      get: "/v1/{parent=organizations/*/developers/*}/attributes"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+
+  // Updates developer attributes.
+  //
+  // This API replaces the
+  // existing attributes with those specified in the request.
+  // Add new attributes, and include or exclude any existing
+  // attributes that you want to retain or
+  // remove, respectively.
+  //
+  // The custom attribute limit is 18.
+  //
+  // **Note**: OAuth access tokens and Key Management Service (KMS) entities
+  // (apps, developers, and API products) are cached for 180 seconds
+  // (default). Any custom attributes associated with these entities
+  // are cached for at least 180 seconds after the entity is accessed at
+  // runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy
+  // won't be able to expire an access token in less than 180 seconds.
+  rpc UpdateDeveloperAttributes(UpdateDeveloperAttributesRequest)
+    returns (Attributes) {
+    option (google.api.http) = {
+      post: "/v1/{parent=organizations/*/developers/*}/attributes"
+      body: "attributes"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+
+  // Gets the monetization configuration for the developer.
+  rpc GetDeveloperMonetizationConfig(GetDeveloperMonetizationConfigRequest)
+    returns (DeveloperMonetizationConfig) {
+    option (google.api.http) = {
+      get: "/v1/{name=organizations/*/developers/*/monetizationConfig}"
+    };
+    option (google.api.method_signature) = "name";
+    option (google.api.method_auditing).directive = "AUDIT_REQUEST_ONLY";
+  }
+
+  // Updates the monetization configuration for the developer.
+  //
+  // (-- api-linter: core::0134::http-uri-name=disabled
+  //     aip.dev/not-precedent: We need to do this to be consistent with other
+  //     Gaambo APIs --)
+  // (-- api-linter: core::0134::http-method=disabled
+  //     api-linter: core::0134::method-signature=disabled
+  //     aip.dev/not-precedent: We need to do this because the backend currently
+  //     does not support `PATCH` requests and we would like to avoid using
+  //     `update_mask` in `PUT`. --)
+  rpc UpdateDeveloperMonetizationConfig(
+    UpdateDeveloperMonetizationConfigRequest)
+    returns (DeveloperMonetizationConfig) {
+    option (google.api.http) = {
+      put: "/v1/{name=organizations/*/developers/*/monetizationConfig}"
+      body: "developer_monetization_config"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+
+  // Gets the account balance for the developer.
+  rpc GetDeveloperBalance(GetDeveloperBalanceRequest)
+    returns (DeveloperBalance) {
+    option (google.api.http) = {
+      get: "/v1/{name=organizations/*/developers/*/balance}"
+    };
+    option (google.api.method_signature) = "name";
+    option (google.api.method_auditing).directive = "AUDIT_REQUEST_ONLY";
+  }
+
+  // Credits the account balance for the developer.
+  rpc CreditDeveloperBalance(CreditDeveloperBalanceRequest)
+    returns (DeveloperBalance) {
+    option (google.api.http) = {
+      post: "/v1/{name=organizations/*/developers/*/balance}:credit"
+      body: "*"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+
+  // Adjust the prepaid balance for the developer.
+  //
+  // This API will be used in scenarios where the developer has been
+  // under-charged or over-charged.
+  rpc AdjustDeveloperBalance(AdjustDeveloperBalanceRequest)
+    returns (DeveloperBalance) {
+    option (google.api.http) = {
+      post: "/v1/{name=organizations/*/developers/*/balance}:adjust"
+      body: "*"
+    };
+    option (google.api.method_auditing).directive =
+      "AUDIT_REQUEST_AND_RESPONSE";
+  }
+}
+// Request for [CreateDeveloper][Developers.CreateDeveloper].
+message CreateDeveloperRequest {
+  // Name of the Apigee organization in which the developer is created.
+  // Use the following structure in your request:
+  //   `organizations/{org}`.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.developers.create"
+  ];
+  // Developer details.
+  Developer developer = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_auditing).directive = "AUDIT"
+  ];
+}
+
+// Request for [UpdateDeveloper][Developers.UpdateDeveloper].
+message UpdateDeveloperRequest {
+  // Email address of the developer. Use the following structure in your
+  // request:
+  //   `organizations/{org}/developers/{developer_email}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.developers.update"
+  ];
+  // Developer details.
+  Developer developer = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_auditing).directive = "AUDIT"
+  ];
+}
+
+// Request for [GetDeveloper][Developers.GetDeveloper].
+message GetDeveloperRequest {
+  // Email address of the developer. Use the following structure in your
+  // request:
+  //   `organizations/{org}/developers/{developer_email}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.developers.get"
+  ];
+  // Status of the developer. Valid values are `active` or `inactive`.
+  string action = 2;
+}
+
+// Request for [DeleteDeveloper][Developers.DeleteDeveloper].
+message DeleteDeveloperRequest {
+  // Email address of the developer. Use the following structure in your
+  // request:
+  //   `organizations/{org}/developers/{developer_email}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.developers.delete"
+  ];
+}
+
+// Request for [ListDevelopers][Developers.ListDevelopers].
+// Lint disabled for backward compatibility of request body.
+// (-- api-linter: core::0158::request-page-size-field=disabled
+//     api-linter: core::0158::request-page-token-field=disabled
+//     api-linter: core::0132::method-signature=disabled
+//     api-linter: core::0132::request-unknown-fields=disabled --)
+// Note that filter, page_size and page_token cannot be mixed with expand,
+// start_key, count, ids, include_company, app.  Such requests will result in an
+// error response.
+message ListDevelopersRequest {
+  // Name of the Apigee organization. Use the following structure in your
+  // request:
+  //   `organizations/{org}`.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.developers.list"
+  ];
+  // Specifies whether to expand the results. Set to `true`
+  // to expand the results. This query parameter is not valid if you use
+  // the `count` or `startKey` query parameters.
+  bool expand = 2;
+  // **Note**: Must be used in conjunction with the `count` parameter.
+  //
+  // Email address of the developer from which to start displaying the list of
+  // developers. For example, if the an unfiltered list returns:
+  //
+  // ```
+  // westley@example.com
+  // fezzik@example.com
+  // buttercup@example.com
+  // ```
+  //
+  // and your `startKey` is `fezzik@example.com`, the list returned will be
+  //
+  // ```
+  // fezzik@example.com
+  // buttercup@example.com
+  // ```
+  string start_key = 3;
+  // Number of developers to return in the API call. Use with the `startKey`
+  // parameter to provide more targeted filtering.
+  // The limit is 1000.
+  int64 count = 4 [(google.api.field_behavior) = OPTIONAL];
+  // List of IDs to include, separated by commas.
+  string ids = 5 [(google.api.field_behavior) = OPTIONAL];
+  // Flag that specifies whether to include company details in the response.
+  bool include_company = 6;
+  // List only Developers that are associated with the app.
+  // Note that start_key, count are not applicable for this filter criteria.
+  string app = 7 [(google.api.field_behavior) = OPTIONAL];
+  // The filter expression to be used to get the list of developers, where
+  // filtering can be done on email.
+  // Example: filter = "email = foo@bar.com"
+  string filter = 8 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.field_visibility).restriction = "TRUSTED_TESTER"
+  ];
+  // Count of developers a single page can have in the response.
+  // If unspecified, at most 100 developers will be returned.
+  // The maximum value is 100; values above 100 will be coerced to 100.
+  int32 page_size = 9 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.field_visibility).restriction = "TRUSTED_TESTER"
+  ];
+  // The starting index record for listing the developers.
+  string page_token = 10 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.field_visibility).restriction = "TRUSTED_TESTER"
+  ];
+}
+
+// Request for [SetDeveloperStatus][Developers.SetDeveloperStatus].
+message SetDeveloperStatusRequest {
+  // Name of the developer. Use the following structure in your
+  // request:
+  //   `organizations/{org}/developers/{developer_id}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.developers.update"
+  ];
+  // Status of the developer. Valid values are `active` and `inactive`.
+  string action = 2 [(google.api.field_auditing).directive = "AUDIT"];
+}
+
+// Request for [GetDeveloperAttribute][Developers.GetDeveloperAttribute].
+message GetDeveloperAttributeRequest {
+  // Name of the developer attribute. Use the following structure in your
+  // request:
+  //   `organizations/{org}/developers/{developer_email}/attributes/{attribute}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.developerattributes.get"
+  ];
+}
+
+// Request for
+// [DeleteDeveloperAttribute][Developers.DeleteDeveloperAttribute].
+message DeleteDeveloperAttributeRequest {
+  // Name of the developer attribute. Use the following structure in your
+  // request:
+  //   `organizations/{org}/developers/{developer_email}/attributes/{attribute}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.developerattributes.delete"
+  ];
+}
+
+// Request for
+// [UpdateDeveloperAttribute][Developers.UpdateDeveloperAttribute].
+message UpdateDeveloperAttributeRequest {
+  // Name of the developer attribute. Use the following structure in your
+  // request:
+  //   `organizations/{org}/developers/{developer_email}/attributes/{attribute}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.developerattributes.update"
+  ];
+  // Developer attribute (name/value pair) to be updated.
+  Attribute attribute = 2 [(google.api.field_auditing).directive = "AUDIT"];
+}
+
+// Request for [ListDeveloperAttributes][Developers.ListDeveloperAttributes].
+message ListDeveloperAttributesRequest {
+  // Email address of the developer for which attributes are being listed. Use
+  // the following structure in your request:
+  //   `organizations/{org}/developers/{developer_email}`
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions = "apigee.developerattributes.list"
+  ];
+}
+
+// Request for
+// [UpdateDeveloperAttributes][Developers.UpdateDeveloperAttributes].
+message UpdateDeveloperAttributesRequest {
+  // Email address of the developer for which attributes are being updated. Use
+  // the following structure in your request:
+  //   `organizations/{org}/developers/{developer_email}`
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.authz).permissions =
+      "apigee.developerattributes.createOrUpdateAll"
+  ];
+  // Developer attributes (name/value pairs).
+  Attributes attributes = 2 [(google.api.field_auditing).directive = "AUDIT"];
+}
+
+// Request for
+// [GetDeveloperMonetizationConfig][Developers.GetDeveloperMonetizationConfig].
+message GetDeveloperMonetizationConfigRequest {
+  // Monetization configuration for the developer. Use the following
+  // structure in your request:
+  // `organizations/{org}/developers/{developer}/monetizationConfig`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.resource_reference).type =
+      "apigee.googleapis.com/DeveloperMonetizationConfig",
+    (google.api.authz).permissions = "apigee.developermonetizationconfigs.get"
+  ];
+}
+
+// Request for
+// [UpdateDeveloperMonetizationConfig][Developers.UpdateDeveloperMonetizationConfig].
+//
+// (-- api-linter: core::0134::request-mask-required=disabled
+//     aip.dev/not-precedent: We need to do this because the backend currently
+//     does not support `PATCH` requests and we would like to avoid using
+//     `update_mask` in `POST`. --)
+message UpdateDeveloperMonetizationConfigRequest {
+  // Monetization configuration for the developer. Use the following
+  // structure in your request:
+  // `organizations/{org}/developers/{developer}/monetizationConfig`
+  //
+  // (-- api-linter: core::0134::request-unknown-fields=disabled
+  //     aip.dev/not-precedent: We really need this field to be consistent with
+  //     other Gaambo APIs --)
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.resource_reference).type =
+      "apigee.googleapis.com/DeveloperMonetizationConfig",
+    (google.api.authz).permissions =
+      "apigee.developermonetizationconfigs.update"
+  ];
+  // Monetization config.
+  DeveloperMonetizationConfig developer_monetization_config = 2
+  [(google.api.field_auditing).directive = "AUDIT"];
+}
+
+// Request for
+// [GetDeveloperBalance][Developers.GetDeveloperBalance].
+message GetDeveloperBalanceRequest {
+  // Account balance for the developer. Use the following
+  // structure in your request:
+  // `organizations/{org}/developers/{developer}/balance`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.resource_reference).type =
+      "apigee.googleapis.com/DeveloperBalance",
+    (google.api.authz).permissions = "apigee.developerbalances.get"
+  ];
+}
+
+// Request for
+// [CreditDeveloperBalance][Developers.CreditDeveloperBalance].
+message CreditDeveloperBalanceRequest {
+  // Account balance for the developer. Use the following
+  // structure in your request:
+  // `organizations/{org}/developers/{developer}/balance`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.resource_reference).type =
+      "apigee.googleapis.com/DeveloperBalance",
+    (google.api.authz).permissions = "apigee.developerbalances.update"
+  ];
+  // The amount of money to be credited. The wallet corresponding to the
+  // currency specified within `transaction_amount` will be updated.
+  // For example, if you specified `currency_code` within `transaction_amount`
+  // as "USD", then the amount would be added to the wallet which has the "USD"
+  // currency or if no such wallet exists, a new wallet will be created with the
+  // "USD" currency.
+  google.type.Money transaction_amount = 2
+  [(google.api.field_auditing).directive = "AUDIT"];
+  // Each transaction_id uniquely identifies a credit balance request. If
+  // multiple requests are received with the same transaction_id, only one of
+  // them will be considered.
+  // (-- This id will be generated by the developer portal. --)
+  string transaction_id = 3 [(google.api.field_auditing).directive = "AUDIT"];
+}
+
+// Request for
+// [AdjustDeveloperBalance][Developers.AdjustDeveloperBalance].
+message AdjustDeveloperBalanceRequest {
+  // Account balance for the developer. Use the following
+  // structure in your request:
+  // `organizations/{org}/developers/{developer}/balance`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_policy).is_service_consumer = true,
+    (google.api.field_policy).resource_type = "CALLBACK",
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.resource_reference).type =
+      "apigee.googleapis.com/DeveloperBalance",
+    (google.api.authz).permissions = "apigee.developerbalances.adjust"
+  ];
+  // * A positive value of `adjustment` means that that the API provider
+  // wants to adjust the balance for an under-charged developer i.e. the balance
+  // of the developer will decrease.
+  // * A negative value of `adjustment` means that that the API provider
+  // wants to adjust the balance for an over-charged developer i.e. the
+  // balance of the developer will increase.
+  google.type.Money adjustment = 2
+  [(google.api.field_auditing).directive = "AUDIT"];
+}
+
+message Developer {
+  // Define the Developer resource
+  option (google.api.resource) = {
+    type: "apigee.googleapis.com/Developer"
+    pattern: "organizations/{org}/developers/{developer}"
+  };
+
+  // Email address of the developer. This value is used to uniquely identify
+  // the developer in Apigee hybrid.
+  // Note that the email address has to be in lowercase only.
+  string email = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_auditing).directive = "AUDIT"
+  ];
+  // First name of the developer.
+  string first_name = 2 [(google.api.field_behavior) = REQUIRED];
+  // Last name of the developer.
+  string last_name = 3 [(google.api.field_behavior) = REQUIRED];
+  // User name of the developer. Not used by Apigee hybrid.
+  string user_name = 4 [(google.api.field_behavior) = REQUIRED];
+  // Developer attributes (name/value pairs). The custom attribute limit is 18.
+  repeated Attribute attributes = 5 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.field_auditing).directive = "AUDIT"
+  ];
+  // List of apps associated with the developer.
+  repeated string apps = 6 [(google.api.field_auditing).directive = "AUDIT"];
+  // List of companies associated with the developer.
+  repeated string companies = 7
+  [(google.api.field_auditing).directive = "AUDIT"];
+  // ID of the developer.
+  //
+  // **Note**: IDs are generated internally by Apigee and are not
+  // guaranteed to stay the same over time.
+  string developer_id = 8 [(google.api.field_auditing).directive = "AUDIT"];
+  // Name of the Apigee organization in which the developer resides.
+  string organization_name = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Status of the developer. Valid values are `active` and `inactive`.
+  string status = 10 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_auditing).directive = "AUDIT"
+  ];
+  // Time at which the developer was created in milliseconds
+  // since epoch.
+  // (-- using non-standard field for compatibility with legacy API --)
+  // (-- api-linter: standard-fields=disabled --)
+  int64 create_time_millis = 11
+  [json_name = "createdAt", (google.api.field_behavior) = OUTPUT_ONLY];
+  // Time at which the developer was last modified in
+  // milliseconds since epoch.
+  // (-- using non-standard field for compatibility with legacy API --)
+  // (-- api-linter: standard-fields=disabled --)
+  int64 update_time_millis = 12
+  [json_name = "lastModifiedAt", (google.api.field_behavior) = OUTPUT_ONLY];
+  // Access type.
+  string access_type = 13 [(google.api.field_auditing).directive = "AUDIT"];
+  // Developer app family.
+  string app_family = 14 [(google.api.field_auditing).directive = "AUDIT"];
+}
+
+message ListOfDevelopersResponse {
+  // List of developers.
+  repeated Developer developer = 1;
+  // Token that can be sent as `next_page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2
+  [(google.api.field_visibility).restriction = "TRUSTED_TESTER"];
+  // Total count of Developers.
+  int32 total_size = 3
+  [(google.api.field_visibility).restriction = "TRUSTED_TESTER"];
+}
+
+// Monetization configuration for the developer.
+message DeveloperMonetizationConfig {
+  // Monetization configuration for the developer.
+  option (google.api.resource) = {
+    type: "apigee.googleapis.com/DeveloperMonetizationConfig"
+    pattern: "organizations/{org}/developers/{developer}/monetizationConfig"
+  };
+
+  // Billing type values.
+  enum BillingType {
+    // The default/unset value.
+    BILLING_TYPE_UNSPECIFIED = 0;
+
+    // Developer pays in advance for the use of APIs and the charged amount is
+    // deducted from their account balance.
+    PREPAID = 1;
+
+    // Developer does not maintain an account balance. The API provider bills
+    // the developer for API usage.
+    POSTPAID = 2;
+  }
+  // Billing type.
+  BillingType billing_type = 1
+  [(google.api.field_auditing).directive = "AUDIT"];
+}
+
+// Account balance for the developer.
+message DeveloperBalance {
+  // Account balance for the developer.
+  option (google.api.resource) = {
+    type: "apigee.googleapis.com/DeveloperBalance"
+    pattern: "organizations/{org}/developers/{developer}/balance"
+  };
+
+  // Wallet used to manage an account balance for a particular currency.
+  // (-- api-linter: core::0142::time-field-type=disabled
+  //     aip.dev/not-precedent: We need to do this to be consistent with other
+  //     Gaambo APIs. --)
+  message Wallet {
+    // Current remaining balance of the developer for a particular currency.
+    google.type.Money balance = 1
+    [(google.api.field_auditing).directive = "AUDIT"];
+    // Time at which the developer last added credit to the account in
+    // milliseconds since epoch.
+    int64 last_credit_time_millis = 2 [
+      json_name = "lastCreditTime",
+      (google.api.field_auditing).directive = "AUDIT",
+      (google.api.field_behavior) = OUTPUT_ONLY
+    ];
+  }
+  // List of all wallets. Each individual wallet stores the account balance
+  // for a particular currency.
+  repeated Wallet wallets = 1 [
+    (google.api.field_auditing).directive = "AUDIT",
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+}
