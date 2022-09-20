@@ -8,5 +8,7 @@ FROM gcr.io/distroless/nodejs:${NODE_VERSION}
 ENV PORT=80
 WORKDIR /usr/app
 COPY --from=ng-builder /usr/app/dist ./dist
+COPY --from=ng-builder /usr/app/node_modules ./node_modules
 COPY --from=ng-builder /usr/app/src/server ./src/server
 COPY --from=ng-builder /usr/app/package*.json ./
+CMD ["./src/server/server.js"]
