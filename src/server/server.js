@@ -101,9 +101,7 @@ app.get(
   "/registry-backend/projects/:project/locations/:location/apis/:api/deployments/:deployment",
   (req, res) => {
 
-    var registryClient = new RegistryClient({
-      // credentials: {id_token: req.header("authorization")}
-    });
+    var registryClient = new RegistryClient();
 
     registryClient.getApiDeployment({
       name: `projects/${req.params.project}/locations/${req.params.location}/apis/${req.params.api}/deployments/${req.params.deployment}`
